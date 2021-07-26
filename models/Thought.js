@@ -38,7 +38,7 @@ const ThoughtSchema = new Schema(
       maxlength: 280
     },
     createdAt: {
-      type: date,
+      type: Date,
       default: Date.now,
       get: createdAtVal => dateFormat(createdAtVal)
     },

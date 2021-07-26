@@ -24,7 +24,7 @@ const thoughtController = {
       });
   },
 
-  // add comment to pizza
+  // add to thougth
   addThought({ body }, res) {
     Thought.create(body)
       .then(({ _id }) => {
@@ -70,11 +70,15 @@ const thoughtController = {
 
   // add reaction
   addReaction({ params, body }, res) {
-    Thought.findByIdAndUpdate(
+    Thought.findOneAndUpdate(
       { _id: params.id }, 
       { $push: { reactions: body } }, 
       { new: true, runValidators: true }
       )
+      .populate({
+        path: 'reactions',
+        select: '-__v'
+    })
       .then(dbThoughtData => {
         if (!dbThoughtData) {
           res.status(404).json({ message: 'No reaction found with this id!' });
@@ -87,11 +91,15 @@ const thoughtController = {
 
   // remove reaction
   removeReaction({ params }, res) {
-    Thought.findByIdAndUpdate(
+    Thought.findOneAndUpdate(
       { _id: params.id }, 
-      { $pull: { reactions: params.reactionId } }, 
+      { $pull: { reactions: { reactionId: params.reactionId }} }, 
       { new: true, runValidators: true }
       )
+      .populate({
+        path: 'reactions',
+        select: '-__v'
+    })
       .then(dbThoughtData => {
         if (!dbThoughtData) {
           res.status(404).json({ message: 'No reaction found with this id!' });

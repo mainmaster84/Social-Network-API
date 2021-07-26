@@ -61,11 +61,15 @@ const userController = {
 
   // add friend
   addFriend({ params }, res) {
-    User.findByIdAndUpdate(
+    User.findOneAndUpdate(
       { _id: params.id }, 
-      { $addToSet: { friends: params.friendId } }, 
+      { $push: { friends: params.friendId } }, 
       { new: true, runValidators: true }
       )
+      .populate({
+        path: 'friends',
+        select: '-__v'
+      })
       .select("-__v")
       .then(dbUserData => {
         if (!dbUserData) {
